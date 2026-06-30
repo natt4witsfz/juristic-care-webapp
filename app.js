@@ -31,7 +31,7 @@ const I18N = {
     "nav.financeShort": "งบ",
     "nav.calendar": "ปฏิทิน",
     "nav.calendarShort": "ปฏิทิน",
-    "nav.routineDashboard": "Dashboard งานประจำ",
+    "nav.routineDashboard": "Routine Daily Task / Daily PM",
     "nav.routineToday": "งานวันนี้",
     "nav.routineVerify": "รอตรวจรับ",
     "nav.routineTemplates": "แม่แบบงานประจำ",
@@ -226,7 +226,7 @@ const I18N = {
     "nav.financeShort": "Finance",
     "nav.calendar": "Calendar",
     "nav.calendarShort": "Calendar",
-    "nav.routineDashboard": "Routine Dashboard",
+    "nav.routineDashboard": "Routine Daily Task / Daily PM",
     "nav.routineToday": "Today Tasks",
     "nav.routineVerify": "Verification",
     "nav.routineTemplates": "Routine Templates",
@@ -639,23 +639,25 @@ const seedJobs = [
 ];
 
 const routineDepartments = [
-  { key: "technician", th: "ช่างอาคาร", en: "Technician" },
-  { key: "housekeeping", th: "แม่บ้าน", en: "Housekeeping" },
-  { key: "security", th: "รปภ.", en: "Security" },
-  { key: "juristic", th: "นิติบุคคล", en: "Juristic" }
+  { key: "juristic", th: "นิติบุคคล", en: "Juristic" },
+  { key: "technician", th: "ช่าง / วิศวกร", en: "Engineer" },
+  { key: "housekeeping", th: "แม่บ้าน", en: "Housekeeper" },
+  { key: "event", th: "กิจกรรม", en: "Event" },
+  { key: "other", th: "อื่น ๆ", en: "Other" },
+  { key: "security", th: "รปภ.", en: "Security" }
 ];
 const routineStatusMeta = {
-  scheduled: { th: "ยังไม่ถึงเวลา", en: "Scheduled", tone: "gray" },
-  ready: { th: "พร้อมทำงาน", en: "Ready", tone: "blue" },
-  in_progress: { th: "กำลังทำ", en: "In progress", tone: "blue" },
-  submitted: { th: "ส่งงานแล้ว", en: "Submitted", tone: "amber" },
-  pending_verification: { th: "รอตรวจรับ", en: "Pending verification", tone: "amber" },
-  approved: { th: "อนุมัติแล้ว", en: "Approved", tone: "green" },
+  scheduled: { th: "รอดำเนินการ", en: "Pending", tone: "gray" },
+  ready: { th: "รอดำเนินการ", en: "Pending", tone: "blue" },
+  in_progress: { th: "กำลังดำเนินการ", en: "In Progress", tone: "blue" },
+  submitted: { th: "ส่งตรวจรับ", en: "Submitted for Review", tone: "amber" },
+  pending_verification: { th: "ส่งตรวจรับ", en: "Submitted for Review", tone: "amber" },
+  approved: { th: "เสร็จสมบูรณ์", en: "Completed", tone: "green" },
   completed: { th: "เสร็จสมบูรณ์", en: "Completed", tone: "green" },
-  rejected: { th: "ตีกลับ", en: "Rejected", tone: "orange" },
-  rework: { th: "ต้องแก้ไข", en: "Rework", tone: "orange" },
-  missed: { th: "เลยเวลา", en: "Missed", tone: "red" },
-  late_submitted: { th: "ส่งช้า", en: "Late submitted", tone: "red" },
+  rejected: { th: "ตีกลับ / ต้องแก้ไข", en: "Rejected / Needs Revision", tone: "orange" },
+  rework: { th: "ตีกลับ / ต้องแก้ไข", en: "Rejected / Needs Revision", tone: "orange" },
+  missed: { th: "รอดำเนินการ", en: "Pending", tone: "red" },
+  late_submitted: { th: "ส่งตรวจรับ", en: "Submitted for Review", tone: "red" },
   cancelled: { th: "ยกเลิก", en: "Cancelled", tone: "gray" }
 };
 const seedRoutineTemplates = [
@@ -2214,7 +2216,7 @@ function organizeSidebarGroups() {
   const groups = [
     { key: "overview", label: "", views: ["dashboard"] },
     { key: "work", label: { th: "งานและการติดตาม", en: "Work & Tracking" }, views: ["commonWork", "pool", "residentWork", "myjobs", "juristicTeam", "technicianJobs", "housekeepingJobs", "roomjobs"] },
-    { key: "routine", label: { th: "งานประจำ / Daily PM", en: "Routine / Daily PM" }, views: ["routineDashboard", "routineToday", "routineVerify", "routineTemplates", "routineCalendar", "routineReports", "routineSettings"] },
+    { key: "routine", label: { th: "Routine Daily Task / Daily PM", en: "Routine Daily Task / Daily PM" }, views: ["routineDashboard", "routineToday", "routineVerify", "routineTemplates", "routineCalendar", "routineReports", "routineSettings"] },
     { key: "info", label: { th: "ข้อมูลโครงการ", en: "Project Info" }, views: ["calendar", "finance", "backhouse"] },
     { key: "people", label: { th: "ผู้ใช้งานและโครงสร้าง", en: "People & Organization" }, views: ["residents", "team", "organization"] },
     { key: "system", label: { th: "ระบบและบันทึก", en: "System & Logs" }, views: ["permissions", "staffLogs", "logs"] }
@@ -2517,6 +2519,7 @@ const isRoutineView = (view = currentView) => ["routineDashboard", "routineToday
 function canVerifyRoutineTask(user = currentUser, task = null) {
   if (!user) return false;
   if (user.role === "admin" || user.isCoAdmin || hasActionPermission("verifyRoutineTasks", user)) return true;
+  if (task && task.assigned_by === user.id) return true;
   if (task && task.verifier_id === user.id) return true;
   return false;
 }
@@ -2575,6 +2578,7 @@ function generateRoutineTasksForDate(date = todayIso()) {
       end_time: template.end_time,
       assignee_id: template.assignee_id,
       assignee_team_id: template.assignee_team_id,
+      assigned_by: template.created_by || "",
       verifier_id: template.verifier_id,
       verifier_role: template.verifier_role,
       status: routineInitialStatus(template, date),
@@ -2642,6 +2646,37 @@ function validateRoutineSubmission(task) {
   if (template?.requires_photo && counts.photos < Number(template.min_photos || 0)) return currentLang === "th" ? `รูปภาพขั้นต่ำ ${template.min_photos} รูป` : `Minimum ${template.min_photos} photos required`;
   if (template?.requires_video && counts.videos < Number(template.min_videos || 0)) return currentLang === "th" ? `วิดีโอขั้นต่ำ ${template.min_videos} คลิป` : `Minimum ${template.min_videos} videos required`;
   return "";
+}
+function routineTaskGroup(task) {
+  if (["pending_verification", "submitted", "late_submitted"].includes(task.status)) return "review";
+  if (["completed", "approved"].includes(task.status)) return "completed";
+  return "staff";
+}
+function routineGroupedSections(tasks, options = {}) {
+  const groups = [
+    {
+      key: "staff",
+      title: currentLang === "th" ? "งานที่รอทีมงานดำเนินการ" : "Tasks Waiting for Staff Action",
+      helper: currentLang === "th" ? "รอดำเนินการ กำลังทำ หรือถูกตีกลับให้แก้ไข" : "Pending, in progress, or returned for revision"
+    },
+    {
+      key: "review",
+      title: currentLang === "th" ? "งานที่ส่งแล้วและรอตรวจรับ" : "Submitted and Waiting for Review",
+      helper: currentLang === "th" ? "ส่งหลักฐานแล้ว แต่ยังไม่ถือว่าเสร็จสมบูรณ์" : "Proof submitted; not completed until approved"
+    },
+    {
+      key: "completed",
+      title: currentLang === "th" ? "งานที่เสร็จสมบูรณ์" : "Completed Tasks",
+      helper: currentLang === "th" ? "ปิดงานแล้วโดย Admin / ผู้มอบหมาย / ผู้ตรวจรับ" : "Closed by Admin, Assignor, or Reviewer"
+    }
+  ];
+  return groups.map(group => {
+    const groupTasks = tasks.filter(task => routineTaskGroup(task) === group.key);
+    return `<section class="routine-section">
+      <div class="routine-section-head"><div><h3>${group.title}</h3><p>${group.helper}</p></div><strong>${groupTasks.length}</strong></div>
+      <div class="routine-card-list">${groupTasks.map(task => routineTaskCard(task, options)).join("") || emptyState(currentLang === "th" ? "ไม่มีงานในกลุ่มนี้" : "No tasks in this group")}</div>
+    </section>`;
+  }).join("");
 }
 function routineVisibleTasks(view = currentView) {
   generateRoutineTasksForDate(routineDashboardDate);
@@ -2728,22 +2763,32 @@ function routineToolbarHtml(showStatus = true) {
 }
 function routineTaskCard(task, options = {}) {
   const assignee = getUser(task.assignee_id);
+  const reviewer = getUser(task.verifier_id);
   const counts = routineEvidenceCounts(task);
   const template = routineTemplate(task);
+  const proofText = [
+    template?.requires_photo ? `${currentLang === "th" ? "รูป" : "Photo"} ${template.min_photos || 1}-${template.max_photos || template.min_photos || 1}` : "",
+    template?.requires_video ? `${currentLang === "th" ? "วิดีโอ" : "Video"} ${template.min_videos || 1}` : ""
+  ].filter(Boolean).join(" · ") || (currentLang === "th" ? "ไม่บังคับ" : "Optional");
   return `<article class="routine-card">
     <div class="routine-card-head">
-      <div><span>${task.start_time}-${task.end_time}</span><h4>${esc(task.title)}</h4><p>${esc(task.area_name)} · ${routineDepartmentLabel(task.department)}</p></div>
+      <div><span>${formatDate(task.task_date)} · ${task.start_time}-${task.end_time}</span><h4>${esc(task.title)}</h4><p>${esc(task.area_name)} · ${routineDepartmentLabel(task.department)}</p></div>
       <i class="routine-status routine-${routineStatusTone(task.status)}">${routineStatusLabel(task.status)}</i>
     </div>
     <div class="routine-meta-grid">
+      <div><small>${currentLang === "th" ? "หมวดงาน" : "Category"}</small><strong>${routineDepartmentLabel(task.department)}</strong></div>
       <div><small>${currentLang === "th" ? "ผู้รับผิดชอบ" : "Assignee"}</small><strong>${assignee ? getUserName(assignee) : "-"}</strong></div>
+      <div><small>${currentLang === "th" ? "กำหนดเสร็จ" : "Due"}</small><strong>${formatDate(task.task_date)} · ${task.end_time || "-"}</strong></div>
+      <div><small>${currentLang === "th" ? "หลักฐานที่ต้องส่ง" : "Required proof"}</small><strong>${proofText}</strong></div>
+      <div><small>${currentLang === "th" ? "ผู้ตรวจรับ" : "Reviewer"}</small><strong>${reviewer ? getUserName(reviewer) : "-"}</strong></div>
       <div><small>${currentLang === "th" ? "Checklist" : "Checklist"}</small><strong>${routineTaskResultsFor(task.id).length}/${routineChecklistItems(task).length}</strong></div>
       <div><small>${currentLang === "th" ? "หลักฐาน" : "Evidence"}</small><strong>📷 ${counts.photos}/${template?.min_photos || 0} · 🎥 ${counts.videos}/${template?.min_videos || 0}</strong></div>
+      <div><small>${currentLang === "th" ? "หมายเหตุ" : "Notes"}</small><strong>${esc(task.note || task.reject_reason || "-")}</strong></div>
     </div>
     <div class="inline-actions routine-actions">
       ${["ready", "scheduled", "missed", "rework", "rejected"].includes(task.status) && routineTaskVisibleToUser(task) ? `<button class="secondary-btn" type="button" data-routine-start="${task.id}">${currentLang === "th" ? "เริ่มงาน" : "Start"}</button>` : ""}
       <button class="primary-btn" type="button" data-routine-open="${task.id}">${currentLang === "th" ? "เปิดรายละเอียด" : "Open"}</button>
-      ${options.verify && canVerifyRoutineTask(currentUser, task) ? `<button class="secondary-btn" type="button" data-routine-approve="${task.id}">${currentLang === "th" ? "Approve" : "Approve"}</button><button class="danger-btn" type="button" data-routine-reject="${task.id}">${currentLang === "th" ? "Reject" : "Reject"}</button>` : ""}
+      ${options.verify && canVerifyRoutineTask(currentUser, task) ? `<button class="secondary-btn" type="button" data-routine-approve="${task.id}">${currentLang === "th" ? "ยืนยันเสร็จสมบูรณ์" : "Confirm completed"}</button><button class="danger-btn" type="button" data-routine-reject="${task.id}">${currentLang === "th" ? "ตีกลับ" : "Reject"}</button>` : ""}
     </div>
     ${activeRoutineTaskId === task.id ? routineTaskDetailHtml(task) : ""}
   </article>`;
@@ -2752,6 +2797,7 @@ function routineTaskDetailHtml(task) {
   const template = routineTemplate(task);
   const attachments = routineTaskAttachmentsFor(task.id);
   const logs = routineTaskLogs.filter(log => log.task_id === task.id).slice(0, 8);
+  const canSubmitProof = routineTaskVisibleToUser(task) && !["pending_verification", "submitted", "late_submitted", "completed", "approved"].includes(task.status);
   return `<div class="routine-detail">
     <p>${esc(template?.description || "")}</p>
     <form data-routine-result-form="${task.id}">
@@ -2765,7 +2811,7 @@ function routineTaskDetailHtml(task) {
         <label class="secondary-btn">📷 ${currentLang === "th" ? "แนบ/ถ่ายรูป" : "Photo"}<input type="file" name="routinePhotos" accept="image/*" capture="environment" multiple hidden></label>
         <label class="secondary-btn">🎥 ${currentLang === "th" ? "แนบ/ถ่ายวิดีโอ" : "Video"}<input type="file" name="routineVideos" accept="video/*" capture="environment" multiple hidden></label>
       </div>
-      <div class="inline-actions"><button class="secondary-btn" type="submit">${currentLang === "th" ? "บันทึก Checklist" : "Save checklist"}</button><button class="primary-btn" type="button" data-routine-submit="${task.id}">${currentLang === "th" ? "ส่งตรวจรับ" : "Submit for verification"}</button><button class="secondary-btn" type="button" data-routine-create-repair="${task.id}">${currentLang === "th" ? "สร้างงานซ่อมต่อเนื่อง" : "Create repair ticket"}</button></div>
+      <div class="inline-actions"><button class="secondary-btn" type="submit">${currentLang === "th" ? "บันทึก Checklist" : "Save checklist"}</button>${canSubmitProof ? `<button class="primary-btn" type="button" data-routine-submit="${task.id}">${currentLang === "th" ? "ส่งตรวจรับ" : "Submit for review"}</button>` : ""}<button class="secondary-btn" type="button" data-routine-create-repair="${task.id}">${currentLang === "th" ? "สร้างงานซ่อมต่อเนื่อง" : "Create repair ticket"}</button></div>
     </form>
     <div class="routine-attachments">${attachments.map(att => att.file_type === "image" ? `<img src="${att.stamped_file_url || att.file_url}" alt="routine evidence">` : `<video src="${att.file_url}" controls></video>`).join("") || `<small>${currentLang === "th" ? "ยังไม่มีหลักฐาน" : "No evidence yet"}</small>`}</div>
     <div class="routine-log-mini"><strong>Routine Logs</strong>${logs.map(log => `<small>${new Date(log.created_at).toLocaleString(currentLang === "th" ? "th-TH" : "en-US")} · ${esc(log.action)} · ${esc(log.actor_name)}</small>`).join("")}</div>
@@ -2784,15 +2830,15 @@ function renderRoutineDashboard() {
       <article><span>${currentLang === "th" ? "เสร็จสมบูรณ์" : "Completed"}</span><strong>${(counts.completed || 0) + (counts.approved || 0)}</strong></article>
       <article><span>${currentLang === "th" ? "เลยเวลา/ตีกลับ" : "Missed/Rejected"}</span><strong>${(counts.missed || 0) + (counts.rejected || 0) + (counts.rework || 0)}</strong></article>
     </div>
-    <div class="routine-card-list">${tasks.map(task => routineTaskCard(task)).join("") || emptyState(currentLang === "th" ? "ไม่มีงานประจำวันที่ตรงเงื่อนไข" : "No routine tasks")}</div>`;
+    ${routineGroupedSections(tasks)}`;
 }
 function renderRoutineToday() {
   const tasks = routineVisibleTasks("routineToday").sort((a, b) => a.start_time.localeCompare(b.start_time));
-  $("#routineTodayView").innerHTML = `<div class="routine-mobile-title"><h3>${currentLang === "th" ? "งานวันนี้ของฉัน" : "My tasks today"}</h3><p>${formatDate(todayIso())}</p></div><div class="routine-card-list">${tasks.map(task => routineTaskCard(task)).join("") || emptyState(currentLang === "th" ? "วันนี้ยังไม่มีงานประจำ" : "No routine tasks today")}</div>`;
+  $("#routineTodayView").innerHTML = `<div class="routine-mobile-title"><h3>${currentLang === "th" ? "งานวันนี้ของฉัน" : "My tasks today"}</h3><p>${formatDate(todayIso())}</p></div>${routineGroupedSections(tasks)}`;
 }
 function renderRoutineVerify() {
   const tasks = routineVisibleTasks("routineVerify");
-  $("#routineVerifyView").innerHTML = `${routineToolbarHtml()}<div class="routine-card-list">${tasks.map(task => routineTaskCard(task, { verify: true })).join("") || emptyState(currentLang === "th" ? "ไม่มีงานรอตรวจรับ" : "No tasks waiting for verification")}</div>`;
+  $("#routineVerifyView").innerHTML = `${routineToolbarHtml()}${routineGroupedSections(tasks, { verify: true })}`;
 }
 function renderRoutineTemplates() {
   $("#routineTemplatesView").innerHTML = `<div class="panel"><div class="panel-header"><div><h3>Routine Templates</h3><p>${currentLang === "th" ? "แม่แบบงานซ้ำ พร้อม Checklist และเงื่อนไขหลักฐาน" : "Recurring templates with checklist and evidence rules"}</p></div></div>

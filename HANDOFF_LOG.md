@@ -1,5 +1,40 @@
 # Handoff Log
 
+## 2026-06-30 — Routine Daily Task / Daily PM flow clarity
+
+### Summary
+
+- Improved the existing Routine Daily Task / Daily PM module without redesigning the app.
+- Made the sidebar Routine entry clearer as `Routine Daily Task / Daily PM`.
+- Aligned routine category labels with Juristic / Engineer / Housekeeper / Event / Other while preserving existing technician and housekeeping data keys for compatibility.
+- Updated routine status labels to match the required flow: Pending, In Progress, Submitted for Review, Completed, and Rejected / Needs Revision.
+- Added clearer task card fields for category, assignee, due date/time, required proof, reviewer, checklist, uploaded evidence, and notes.
+- Grouped routine tasks into sections for staff action, submitted/waiting for review, and completed work.
+- Preserved the rule that submitted proof moves to review first; only Admin / Co-Admin / permitted reviewer / assigned-by user / reviewer can confirm completion.
+
+### Files changed
+
+- `app.js`
+- `styles.css`
+- `HANDOFF_LOG.md`
+
+### Verification performed
+
+- Ran `node --check app.js` successfully.
+- Verified the local app responds at `http://localhost:4173` with HTTP 200.
+- Browser smoke checked desktop login with `ADMIN / 1234`; Routine page opens, shows the `Routine Daily Task / Daily PM` sidebar entry, 3 grouped sections, 4 routine cards, and the expected card fields.
+- Browser smoke checked mobile shell at `?device=mobile`; Routine navigation entry, 3 grouped sections, and 4 routine cards are present in DOM. The mobile click locator timed out on the hidden/positioned navigation control, so a full mobile interaction pass is still recommended.
+
+### Known issues / follow-up work
+
+- Routine data is still mock/localStorage-based; production storage and immutable audit logs remain future backend work.
+- Existing user localStorage may contain older routine templates/statuses; labels now normalize the visible flow, but stored keys are preserved for backward compatibility.
+- Complete a manual mobile tap-through for Routine navigation and proof submission on an actual phone-sized browser/device.
+
+### Recommended next task
+
+Manually test the Routine flow on desktop and mobile with Admin and staff accounts: start task, save checklist/evidence, submit for review, reject, revise, and confirm completed.
+
 ## 2026-06-30 — AI workflow documentation baseline
 
 ### Current state

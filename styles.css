@@ -956,7 +956,12 @@ body.device-desktop .topbar { height: 78px; padding: 0 34px; }
 .routine-meta-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 14px 0; }
 .routine-meta-grid div { background: #f8fbfa; border: 1px solid #e3ece8; border-radius: 12px; padding: 10px; }
 .routine-meta-grid small { color: var(--muted); font-size: 9px; display: block; margin-bottom: 4px; }
-.routine-meta-grid strong { font-size: 12px; color: #17372e; }
+.routine-meta-grid strong { font-size: 12px; color: #17372e; overflow-wrap: anywhere; }
+.routine-section { display: grid; gap: 12px; margin-top: 16px; }
+.routine-section-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; background: white; border: 1px solid var(--line); border-radius: 16px; padding: 14px 16px; box-shadow: 0 8px 22px rgba(20,55,44,.04); }
+.routine-section-head h3 { margin: 0; color: #17372e; font-size: 15px; }
+.routine-section-head p { margin: 4px 0 0; color: var(--muted); font-size: 11px; }
+.routine-section-head strong { min-width: 36px; height: 36px; border-radius: 999px; display: inline-flex; align-items: center; justify-content: center; background: var(--green-soft); color: var(--green); font-size: 16px; }
 .routine-detail { border-top: 1px solid var(--line); margin-top: 14px; padding-top: 14px; display: grid; gap: 12px; }
 .routine-detail form { display: grid; gap: 12px; }
 .routine-checklist { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
