@@ -1,0 +1,333 @@
+{
+  "projectName": "Juristic Care WebApp",
+  "language": {
+    "default": "th",
+    "supported": ["th", "en"],
+    "requireFullI18n": true
+  },
+  "objective": "สร้าง WebApp สำหรับนิติบุคคลอาคารชุด ใช้รับแจ้งปัญหา ติดตามงาน มอบหมายงาน จัดการลูกบ้าน ทีมงาน สิทธิ์ผู้ใช้ ประกาศ งบการเงิน ปฏิทิน และรายงาน",
+  "deviceSupport": {
+    "detectDevice": true,
+    "desktop": "Sidebar layout",
+    "mobile": "Bottom navigation and mobile optimized modal/bottom sheet"
+  },
+  "roles": {
+    "admin": {
+      "description": "ผู้ดูแลระบบสูงสุด",
+      "access": "all",
+      "safetyRule": "Admin ต้องเข้าถึงทุกอย่างเสมอเพื่อป้องกัน lockout",
+      "canViewPasswords": true,
+      "logs": ["ADMIN_LOGIN", "ADMIN_ACTION"]
+    },
+    "coAdmin": {
+      "description": "ผู้ช่วย Admin ที่ได้รับสิทธิ์จาก Admin",
+      "canViewPasswords": false,
+      "deleteUserFlow": "Co-Admin ลบผู้ใช้ไม่ได้ทันที ต้องสร้างคำขอให้ Admin ยืนยัน",
+      "logs": ["CO_ADMIN_LOGIN", "CO_ADMIN_ACTION"]
+    },
+    "staff": {
+      "departments": ["committee", "juristic", "technician", "housekeeping", "security_staff", "gardener", "contractor"],
+      "permissionsControlledBy": "Permission Center"
+    },
+    "resident": {
+      "description": "ลูกบ้าน",
+      "defaultNavigationLabels": ["ภาพรวม", "ห้องของฉัน"],
+      "mustNotSee": ["Pool งานกลาง", "ทีมงาน", "Admin Log", "Staff Log"]
+    }
+  },
+  "auth": {
+    "loginFields": ["roomNumberOrUserId", "password"],
+    "firstTimeAccess": true,
+    "demoAccounts": [
+      { "id": "ADMIN", "password": "1234", "role": "admin" },
+      { "id": "STAFF-01", "password": "1234", "role": "staff" },
+      { "id": "STAFF-02", "password": "1234", "role": "staff" },
+      { "id": "A-0201", "password": "1234", "role": "resident" }
+    ]
+  },
+  "sidebar": [
+    "dashboard",
+    "commonWork",
+    "residentWork",
+    "finance",
+    "calendar",
+    "pool",
+    "juristicTeam",
+    "myjobs",
+    "technicianJobs",
+    "housekeepingJobs",
+    "roomjobs",
+    "team",
+    "residents",
+    "organization",
+    "backhouse",
+    "permissions",
+    "staffLogs",
+    "logs"
+  ],
+  "permissions": {
+    "sidebarAccessKeys": [
+      "dashboard",
+      "commonWork",
+      "residentWork",
+      "finance",
+      "calendar",
+      "pool",
+      "juristicTeam",
+      "myjobs",
+      "technicianJobs",
+      "housekeepingJobs",
+      "roomjobs",
+      "team",
+      "residents",
+      "organization",
+      "backhouse",
+      "staffLogs",
+      "permissions"
+    ],
+    "actionAuthorityKeys": [
+      "assignL1",
+      "assignL2",
+      "createJob",
+      "manageTeam",
+      "manageResidents",
+      "manageAnnouncements",
+      "manageOrganization",
+      "importExport",
+      "viewStaffLog",
+      "managePermissions"
+    ],
+    "individualPermissions": {
+      "enabled": true,
+      "requiresSaveButton": true,
+      "logAction": "PERMISSIONS_UPDATED"
+    },
+    "bulkPermissions": {
+      "enabled": true,
+      "groups": [
+        "residents",
+        "committee",
+        "juristic",
+        "technician",
+        "housekeeping",
+        "security_staff",
+        "gardener",
+        "contractor",
+        "staff"
+      ],
+      "presets": {
+        "residentStandard": {
+          "labelTh": "สิทธิ์ลูกบ้านมาตรฐาน",
+          "sidebar": ["dashboard", "commonWork", "roomjobs", "calendar", "finance"],
+          "actions": []
+        },
+        "staffBasic": {
+          "labelTh": "สิทธิ์ทีมงานพื้นฐาน",
+          "sidebar": ["dashboard", "commonWork", "myjobs", "calendar"],
+          "actions": ["createJob"]
+        },
+        "juristicOperator": {
+          "labelTh": "สิทธิ์เจ้าหน้าที่นิติ",
+          "sidebar": ["dashboard", "commonWork", "residentWork", "finance", "calendar", "pool", "juristicTeam", "myjobs", "residents", "backhouse"],
+          "actions": ["assignL1", "createJob", "manageResidents", "manageAnnouncements", "importExport"]
+        },
+        "technicianBasic": {
+          "labelTh": "สิทธิ์ช่างอาคาร",
+          "sidebar": ["dashboard", "commonWork", "myjobs", "technicianJobs", "calendar"],
+          "actions": ["createJob"]
+        },
+        "committeeView": {
+          "labelTh": "สิทธิ์คณะกรรมการดูภาพรวม",
+          "sidebar": ["dashboard", "commonWork", "residentWork", "finance", "calendar", "backhouse"],
+          "actions": ["importExport"]
+        },
+        "clearAll": {
+          "labelTh": "ปิดสิทธิ์ทั้งหมด",
+          "sidebar": [],
+          "actions": []
+        }
+      },
+      "previewBeforeApply": true,
+      "logAction": "BULK_PERMISSIONS_UPDATED"
+    }
+  },
+  "workOrderSystem": {
+    "sources": ["Google Form", "WebApp", "System"],
+    "googleFormFlow": {
+      "destination": "centralPool",
+      "raw": true,
+      "initialStatus": "open",
+      "hasCategory": false,
+      "hasAssignee": false,
+      "supportsAttachments": true
+    },
+    "mainCategories": ["common", "resident"],
+    "subCategories": ["plumbing", "electrical", "cleaning", "building", "elevator", "garden", "furniture", "security", "internet"],
+    "statuses": [
+      "open",
+      "received",
+      "pending_inspection",
+      "inspected_waiting_repair",
+      "completed",
+      "repaired_follow_up",
+      "temporary_waiting_parts",
+      "waiting_owner_or_admin_verification",
+      "rejected"
+    ],
+    "attachmentRules": {
+      "requiredExceptStatuses": ["received", "rejected"],
+      "min": 1,
+      "max": 3,
+      "stampUserAndTimestamp": true,
+      "captureOrUpload": true
+    },
+    "followUpDateRequiredFor": ["repaired_follow_up", "temporary_waiting_parts"]
+  },
+  "sla": {
+    "field": "dueDate",
+    "defaultByPriority": {
+      "normal": 7,
+      "high": 3,
+      "urgent": 1
+    },
+    "badges": ["daysLeft", "dueToday", "overdueDays"],
+    "notifications": ["dueSoon", "dueToday", "overdue"]
+  },
+  "notifications": [
+    "newJobWaitingAssignment",
+    "followUpDue",
+    "dueSoon",
+    "dueToday",
+    "overdue",
+    "scheduleConflict",
+    "waitingCloseVerification"
+  ],
+  "timeline": {
+    "required": true,
+    "events": ["created", "assigned", "status_update", "attachment_added", "verified_completed", "schedule_conflict_confirmed"],
+    "fields": ["id", "at", "by", "byName", "action", "fromStatus", "toStatus", "message", "data", "attachments"]
+  },
+  "exports": {
+    "jobCsv": {
+      "enabled": true,
+      "fields": [
+        "job_id",
+        "title",
+        "source",
+        "status",
+        "main_category",
+        "sub_category",
+        "priority",
+        "room",
+        "building",
+        "floor",
+        "contact_name",
+        "contact_phone",
+        "reporter",
+        "assignee",
+        "assigned_by",
+        "job_date",
+        "due_date",
+        "due_status",
+        "next_update_date",
+        "description",
+        "timeline_at",
+        "timeline_by",
+        "timeline_action",
+        "timeline_status",
+        "timeline_message",
+        "attachment_count",
+        "attachment_refs"
+      ]
+    },
+    "jobPdf": {
+      "enabled": true,
+      "methodForStaticApp": "Generate printable HTML report and call window.print()",
+      "includeTimelineImages": true
+    },
+    "residentCsv": {
+      "enabled": true,
+      "format": "wide",
+      "includeLoginIdAndPassword": true,
+      "exampleFields": ["occupant_1_first_name", "occupant_1_phone", "car_1_prefix", "car_1_number", "car_1_brand"],
+      "mustNotCombineOccupantsAndCarsInOneCell": true,
+      "importBackwardCompatibleWithLegacyCombinedFields": true
+    }
+  },
+  "residents": {
+    "maxRooms": 882,
+    "roomFields": ["room_id", "login_id", "password", "room_no_1", "room_no_2", "building", "common_fee_status", "primary_person_key"],
+    "owner": { "max": 1, "fields": ["firstName", "lastName", "nickName", "phone", "isCurrentResident"] },
+    "occupants": { "max": "unlimited", "fields": ["firstName", "lastName", "nickName", "phone", "status", "isCurrentResident"] },
+    "cars": { "max": "unlimited", "fields": ["prefix", "number", "province", "brand", "model", "color"] },
+    "primaryDisplayRule": "Manual drag order determines first displayed resident"
+  },
+  "team": {
+    "fields": ["id", "password", "firstName", "lastName", "nickName", "position", "department", "profileImage", "assignL1", "assignL2", "isCoAdmin"],
+    "adminCanViewCredentials": true,
+    "coAdminCanViewCredentials": false,
+    "saveButtonRequired": true,
+    "logAllChanges": true
+  },
+  "organizationChart": {
+    "visibleTo": ["admin", "coAdminWithPermission"],
+    "eligibleDepartments": ["committee", "juristic", "technician"],
+    "interaction": "drag profile into organization slots",
+    "slotsGrowByAppointedUsers": true,
+    "requiresSaveBeforeDashboardDisplay": true
+  },
+  "announcements": {
+    "sidebarName": "ประกาศ",
+    "uploadTypes": ["image", "pdf"],
+    "fields": ["title", "summary", "date", "audience", "pages"],
+    "dashboardShowsFirstPage": true,
+    "popup": {
+      "large": true,
+      "downloadButton": true,
+      "nextPrevious": true
+    }
+  },
+  "finance": {
+    "summaryCards": ["income", "expenses", "unpaidFees", "reserveFund"],
+    "importCsv": true,
+    "exportReport": true,
+    "residentAccessControlledByPermissions": true
+  },
+  "calendar": {
+    "events": true,
+    "icsDownload": true,
+    "googleCalendarReady": true
+  },
+  "logs": {
+    "adminLog": {
+      "visibleOnlyToAdmin": true,
+      "appendOnlyInUi": true,
+      "events": ["login", "permissionChange", "bulkPermission", "teamChange", "residentChange", "import", "export", "announcementChange", "organizationChange"]
+    },
+    "staffLog": {
+      "events": ["login", "jobAccepted", "statusUpdated", "attachmentAdded", "jobClosed"]
+    }
+  },
+  "recommendedProductionStack": {
+    "preferred": "Supabase",
+    "alternative": "Firebase",
+    "mvp": "Google Sheets + Apps Script + GitHub Pages",
+    "storage": "Object storage for images and PDFs",
+    "security": "Auth plus row level security or security rules",
+    "audit": "append-only logs"
+  },
+  "acceptanceCriteria": [
+    "Admin sees all pages",
+    "Co-Admin rights are granted by Admin",
+    "Residents only see permitted sidebar pages",
+    "Bulk Permission can apply resident standard access to all residents",
+    "Google Form jobs enter central pool as open raw jobs",
+    "Jobs can be categorized and assigned",
+    "Due date badges and notifications work",
+    "Status update attachment rules are enforced",
+    "Job CSV and PDF export include timeline and attachments",
+    "Resident CSV export uses wide columns and includes login_id/password",
+    "Admin Log records important actions",
+    "Thai/English toggle updates the UI"
+  ]
+}
