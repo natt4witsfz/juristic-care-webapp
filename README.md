@@ -1,97 +1,45 @@
-# Juristic Care
+# O83 Care Engineering Workspace
 
-ต้นแบบ WebApp สำหรับนิติบุคคลอาคารชุด รองรับผู้ใช้งาน 30 คน มีระบบ:
+O83 Care is an operational coordination and organizational-memory system for residential Juristic Persons. This repository contains the reviewed architecture, database/SQL baseline, implementation roadmap, Supabase/Auth foundation, controlled Case and Investigation commands, and a runnable React workspace. It is a development foundation, not a production-complete system.
 
-- Login ด้วยเลขห้องและรหัสผ่าน
-- Dashboard ภาพรวมงานและสถานะ
-- Pool งานกลางสำหรับรอรับ/มอบหมาย
-- งานของฉันและงานของห้อง
-- สร้างงาน มอบหมาย รับงาน และอัปเดตสถานะ
-- รายชื่อทีมงานและลูกบ้าน
-- Responsive สำหรับ desktop, tablet และ mobile
-- ตรวจจับอุปกรณ์อัตโนมัติและสลับ UX ระหว่าง Desktop Sidebar กับ Mobile Bottom Navigation
-- ระบบสองภาษา ไทย/อังกฤษ โดยภาษาเริ่มต้นคือภาษาไทย และมีปุ่มสลับภาษา `EN` / `TH`
-- Flow ใหม่: Google Form Raw Pool, เจ้าหน้าที่บางรหัสคัดแยก/มอบหมาย, งานเข้า “งานของฉัน” ของผู้ได้รับมอบหมายทันที, แนบรูปและวันอัปเดตถัดไป
-- Admin Log ดูได้เฉพาะ Admin และไม่มีปุ่มลบในหน้าระบบ
-- Admin สามารถเข้าเมนูทีมงานเพื่อแก้ไขทีม และมอบ/ถอดสิทธิ์ Co-Admin ได้
-- Co-Admin แก้ไขข้อมูลทีมงานได้ แต่ไม่สามารถมอบสิทธิ์ Co-Admin ให้ผู้อื่น
-- หน้า Team รองรับแก้ชื่อ นามสกุล ชื่อเล่น ตำแหน่ง แผนก สิทธิ์มอบหมายงาน L1/L2 และรูปโปรไฟล์
-- Admin/Co-Admin เพิ่มผู้ใช้งานได้ทันที
-- Admin ลบผู้ใช้ได้ทันทีพร้อม export CSV งานของผู้ใช้คนนั้น
-- Co-Admin กดลบแล้วระบบจะสร้างคำขอลบให้ Admin อนุมัติก่อน จึงจะลบและ export CSV ได้
-- หน้า Team ต้องกดปุ่ม `บันทึก` ต่อพนักงาน 1 คนทุกครั้ง การแก้ไขจึงจะมีผลจริง
-- การแก้ไขข้อมูลทีมงานโดย Admin/Co-Admin จะบันทึกรายละเอียดฟิลด์ที่เปลี่ยนทั้งหมดเข้า Admin Log
-- Co-Admin แก้ไขข้อมูลทีมงานได้ แต่จะไม่เห็น ID และรหัสผ่านของพนักงาน ส่วน Admin เห็นและแก้ไขได้
-- เพิ่มเมนู `ลูกบ้าน` สำหรับ Admin/Co-Admin: รองรับทะเบียนเลขห้องสูงสุด 882 ห้อง, เลขห้อง 2 รูปแบบ, เจ้าของร่วม 1 คน, ผู้เช่า/ผู้อยู่อาศัยหลายคน, ทะเบียนรถ และสถานะค่าส่วนกลางปีปัจจุบัน
-- หน้า `ลูกบ้าน` เพิ่มฟิลด์ `ตึก`, ค้นหาเลขห้อง/ชื่อ/ทะเบียนรถ, กรองด้วย Dropdown ตามตึก และมีปุ่ม Export/Import CSV สำหรับอัปเดตข้อมูลหลายห้องพร้อมกัน
-- รายละเอียดห้องลูกบ้านแสดงรายชื่อรวมของเจ้าของร่วม/ผู้เช่า/ผู้อยู่อาศัย โดยใช้ปุ่ม ↑/↓ จัดลำดับเอง คนที่อยู่บนสุดจะแสดงเป็นผู้อยู่อาศัยหลักในตารางหน้าลูกบ้าน
-- Checkbox ในรายชื่อรวมใช้บอกว่าใครเป็นผู้อยู่อาศัย ณ ปัจจุบันเท่านั้น ไม่ได้ใช้กำหนดคนที่แสดงหน้ารวม
-- ทะเบียนรถเพิ่มข้อมูลยี่ห้อ รุ่น และสีรถ พร้อมรองรับใน Export/Import CSV
-- เพิ่มระบบ Work Order Assignment สำหรับสร้าง/มอบหมายงานจาก WebApp/Google Form Pool โดยรองรับวันที่งาน เวลา เลขห้อง ตึก ชั้น ผู้ติดต่อ เบอร์ รายละเอียด รูปภาพ ผู้มอบหมาย ผู้รับงาน หมายเหตุ PIN และ Timeline
-- เพิ่มฟังก์ชันกลางสำหรับอนาคตย้าย Backend: `normalizeJob`, `createJob`, `assignJob`, `updateJobStatus`, `validateStatusUpdate`, `addJobTimeline`, `generateClosePin`, `checkScheduleConflict`, `canViewJob`, `canUpdateJob`, `canAssignJob`, `canSeeClosePin`, `canVerifyCompletion`, `getDashboardCounts`, `getReportCounts`
-- โครงสร้าง Job ใหม่รองรับ field หลัก: `jobDate`, `startTime`, `endTime`, `roomNo`, `building`, `floor`, `contactName`, `contactPhone`, `issueDescription`, `initialAttachments`, `assignedBy`, `assignee`, `status`, `subStatus`, `note`, `closePin`, `timeline`, `statusUpdates`, `completedAt`, `noPinAvailable`, `hasScheduleConflict`
-- ระบบแนบรูปในฟอร์มสร้างงานและอัปเดตสถานะใช้ปุ่ม `ถ่ายรูป` / `แนบรูป` และรูปทุกใบที่บันทึกผ่าน WebApp จะถูกประทับชื่อผู้ใช้งานพร้อม Timestamp ลงบนรูปอัตโนมัติ
-- หน้า `ทีมงาน` รองรับ Export/Import CSV โดย Import ใช้หลักเพิ่มหรือแก้ไขข้อมูลเดิมตาม `id` หรือ `room_or_staff_code`; Admin เท่านั้นที่ Export/Import รหัสผ่านได้ ส่วน Co-Admin จะไม่เห็นหรือเปลี่ยนรหัสผ่านจาก CSV
-- เพิ่มเมนู `งานแม่บ้าน` ต่อจาก `งานทีมช่าง` เพื่อแสดงงานที่มอบหมายให้ผู้ใช้งานแผนกแม่บ้าน
-- เพิ่มเมนูต่อท้ายภาพรวม: `งานส่วนกลาง`, `งบการเงิน`, และ `ปฏิทิน` โดยปฏิทินเป็น mockup สำหรับต่อ Google Calendar API หรือฝัง Google Calendar iframe ภายหลัง
-- สถานะใหม่: รับเรื่อง, รอตรวจสอบ, ตรวจสอบแล้วรอแก้ไข/อะไหล่, แก้ไขสมบูรณ์, แก้ไขแล้วรอติดตาม, แก้ไขเบื้องต้นรออะไหล่/ผู้รับเหมา, ปฏิเสธงาน และ subStatus `ช่างแจ้งเสร็จแล้ว รอตรวจสอบ`
-- งานที่ช่างแจ้งเสร็จแต่ไม่มี PIN จะไม่ถูกนับเป็น Completed จนกว่า Admin/ผู้มอบหมาย/เจ้าของห้องยืนยันปิดงาน
-- ระบบสร้างงานตรวจเวลาทับซ้อนของผู้ได้รับมอบหมาย ถ้าพบ overlap จะถามยืนยันก่อนสร้าง/มอบหมาย และบันทึก Timeline
-- ยกเลิกระบบโต้แย้งงาน/นับถอยหลัง 30 นาทีแล้ว เมื่อมอบหมายงาน งานจะเข้า “งานของฉัน” ของผู้รับมอบหมายทันที
-- สถานะ `แก้ไขแล้ว รอติดตาม` และ `แก้ไขเบื้องต้น รออะไหล่/ผู้รับเหมา` ต้องเลือกวันที่ติดตาม/อัปเดตครั้งถัดไปก่อนบันทึก
-- ทุกสถานะการอัปเดต ยกเว้น `รับเรื่อง` และ `ปฏิเสธงาน` ต้องแนบรูปภาพอย่างน้อย 1 รูป และไม่เกิน 3 รูป
+## Start here
 
-## ทดสอบ Work Order Flow
+1. Read [`architecture/00_foundation.md`](architecture/00_foundation.md), [`architecture/16_project_glossary.md`](architecture/16_project_glossary.md), and [`planning/00_master_roadmap.md`](planning/00_master_roadmap.md).
+2. Install Node.js 22.12+, pnpm 11.9 through Corepack, Git, and a Docker-compatible runtime.
+3. Copy `frontend/.env.example` to `frontend/.env.local` and insert the local or development Supabase URL and publishable key. Never use a secret/service-role key in a `VITE_` variable.
+4. Run `pnpm install --frozen-lockfile`, `pnpm db:validate:static`, `pnpm validate`, and then `pnpm dev`.
+5. Open `http://localhost:5173`; `/system-status` confirms public configuration without exposing values.
 
-1. Login `ADMIN / 1234`
-2. กด `สร้างงานใหม่` กรอกวันที่ เลขห้อง ผู้ติดต่อ เบอร์ รายละเอียด และเลือกผู้ได้รับมอบหมาย
-3. ถ้าเลือกเวลาที่ซ้อนกับงานเดิม ระบบจะแจ้งเตือนก่อนสร้าง
-4. เปิดรายละเอียดงาน จะเห็น PIN เฉพาะ Admin/ผู้มอบหมาย
-5. Login เป็น Staff ที่ได้รับมอบหมาย เช่น `STAFF-02 / 1234`
-6. ไปที่ `งานทีมช่าง` เปิดงาน และอัปเดตสถานะตามลำดับ
-7. ถ้าปิดงานด้วย PIN ให้เลือกสถานะ Completed แล้วกรอก PIN 4 หลักให้ถูกต้อง
-8. ถ้าไม่มี PIN ให้ติ๊ก `ลูกบ้านไม่อยู่ / ไม่สามารถขอ PIN ได้`, กรอกเหตุผล, แนบรูป อย่างน้อย 1 รูป งานจะเป็น `ช่างแจ้งเสร็จแล้ว รอตรวจสอบ`
-9. Login กลับเป็น Admin แล้วเปิดงานนั้น กด `ยืนยันปิดงานนี้` งานจึงจะเป็น Completed จริง
+Local Supabase requires Docker. Run `pnpm db:start`, `pnpm db:reset`, `pnpm supabase db lint --local --level warning`, and `pnpm supabase test db` before exercising authenticated features.
 
-## จุดที่ควรย้ายไป Backend ในอนาคต
+## Workspace
 
-- การ generate/ตรวจ PIN และสิทธิ์การเห็น PIN
-- การตรวจเวลางานซ้อนแบบ transaction
-- Timeline และ Admin/Staff Log แบบ immutable audit log
-- รูปภาพแนบควรเก็บใน object storage ไม่ใช่ localStorage
-- Import/Export CSV ควร validate schema ฝั่ง server
+- `frontend/` — React application, Auth/access provider, protected workspace, Case/Investigation foundation, operational projections, tests
+- `backend/` — browser-safe Supabase client and generic application boundaries
+- `supabase/` — CLI configuration, canonical executable migrations, and local seed entry point
+- `database/`, `sql/` — approved database design and generated SQL baseline
+- `architecture/` — normative reviewed architecture; `architecture_v2/` is retained historical generation input
+- `planning/` — approved roadmap, feature catalog, sprints, release gates, risks, and acceptance
+- `docs/`, `bootstrap/` — developer and workspace guidance
+- `.github/`, `scripts/` — CI, dependency updates, task templates, setup, and verification
 
-หมายเหตุ: เวอร์ชันนี้ยังเป็น mock/localStorage สำหรับออกแบบ UX/UI และทดสอบ flow เท่านั้น ยังไม่ควรใช้กับข้อมูลจริงหรือข้อมูลส่วนบุคคลจริง
-- เพิ่มเมนู `Staff Log` สำหรับบันทึกกิจกรรมของทีมงานที่ไม่ใช่ Admin/Co-Admin
-- `Admin Log` บันทึกกิจกรรมของ Admin และ Co-Admin พร้อม Filter วันที่ และตำแหน่ง Admin/Co-Admin
+## Quality commands
 
-## ทดลองใช้งาน
+| Command                   | Purpose                                                            |
+| ------------------------- | ------------------------------------------------------------------ |
+| `pnpm dev`                | Start the Vite development server                                  |
+| `pnpm format:check`       | Verify formatting                                                  |
+| `pnpm lint`               | Run ESLint across workspace packages                               |
+| `pnpm typecheck`          | Run strict TypeScript checks                                       |
+| `pnpm test`               | Run Vitest suites                                                  |
+| `pnpm test:coverage`      | Run unit and component tests with coverage                         |
+| `pnpm test:e2e`           | Run Playwright smoke tests                                         |
+| `pnpm build`              | Create production frontend and backend type artifacts              |
+| `pnpm validate`           | Run every required local quality gate                              |
+| `pnpm db:validate:static` | Check canonical SQL, migration, RLS, and browser secret boundaries |
 
-เปิด `index.html` หรือรัน local server:
+## Engineering boundary
 
-```powershell
-python -m http.server 4173
-```
+Every incoming Report creates a separate Case. Only an authorized human investigation verifies an Incident. History is immutable; corrections supersede. Responsibility, Authority, Commitment, Capability, Availability, Organizational Priority, Execution Sequence, and SLA remain separate. Human safety precedes workflow. AI is advisory. These invariants are implementation constraints, not product copy.
 
-จากนั้นเปิด `http://localhost:4173`
-
-สำหรับทดสอบรูปแบบโดยบังคับโหมด:
-
-- Mobile: `http://localhost:4173/?device=mobile`
-- Desktop: `http://localhost:4173/?device=desktop`
-
-บัญชีตัวอย่าง:
-
-- ผู้ดูแล: `ADMIN` / `1234`
-- เจ้าหน้าที่มอบหมายงาน: `STAFF-01` / `1234`
-- ทีมช่าง: `STAFF-02` / `1234`
-- ลูกบ้าน: `A-0201` / `1234`
-
-ข้อมูลในต้นแบบเก็บใน `localStorage` ของ browser
-
-## ภาษา
-
-- ภาษาเริ่มต้น: ไทย
-- กดปุ่ม `EN` เพื่อเปลี่ยนเป็นภาษาอังกฤษ
-- กดปุ่ม `TH` เพื่อกลับเป็นภาษาไทย
-- ระบบจำภาษาที่เลือกไว้ใน `localStorage`
+See [`docs/DEVELOPMENT_SETUP.md`](docs/DEVELOPMENT_SETUP.md) for setup, [`docs/SUPABASE_SETUP.md`](docs/SUPABASE_SETUP.md) for database provisioning, [`docs/KNOWN_LIMITATIONS.md`](docs/KNOWN_LIMITATIONS.md) for the implementation boundary, and [`review/14_GO_NO_GO.md`](review/14_GO_NO_GO.md) for the production decision.

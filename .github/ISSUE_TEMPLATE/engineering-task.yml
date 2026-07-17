@@ -1,0 +1,36 @@
+name: Engineering task
+description: Plan an implementation task against the approved architecture and roadmap.
+title: '[Engineering] '
+labels: [engineering]
+body:
+  - type: input
+    id: feature
+    attributes:
+      label: Feature and sprint
+      description: Reference the approved feature ID and sprint.
+    validations:
+      required: true
+  - type: textarea
+    id: outcome
+    attributes:
+      label: Business or engineering outcome
+    validations:
+      required: true
+  - type: textarea
+    id: dependencies
+    attributes:
+      label: Dependencies and architecture references
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance and negative paths
+    validations:
+      required: true
+  - type: textarea
+    id: risk
+    attributes:
+      label: Security, safety, privacy, history, and operational risks
+    validations:
+      required: true

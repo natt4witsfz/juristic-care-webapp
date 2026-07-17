@@ -1,0 +1,15 @@
+# Local environment files and credentials
+.env
+.env.*
+
+# Dependencies, generated builds, and test artifacts
+node_modules/
+dist/
+coverage/
+playwright-report/
+test-results/
+*.tsbuildinfo
+.vite/
+
+# Local-only browser tests
+e2e/
