@@ -26,6 +26,28 @@ if ($rls -notmatch 'o83_ai_service_recommendation_insert') { throw 'AI service l
 if ($rls -match 'for all to authenticated using \(core\.is_ai_service') { throw 'AI service has an over-broad FOR ALL policy.' }
 
 $migration = Get-ChildItem -LiteralPath (Join-Path $ProjectRoot 'supabase/migrations') -File -Filter '*.sql' | Sort-Object Name
-if ($migration.Count -lt 1) { throw 'No timestamped Supabase migration exists.' }
+if ($migration.Count -lt 3) { throw 'The baseline and both production-go forward migrations are required.' }
+foreach ($file in $migration) {
+  if ($file.Name -notmatch '^\d{14}_[a-z0-9_]+\.sql$') { throw "Invalid Supabase migration filename: $($file.Name)" }
+  $content = Get-Content -LiteralPath $file.FullName -Raw
+  if ($content -match '(?im)comment\s+on\s+(table|column)\s+(storage\.(objects|buckets)|auth\.)') {
+    throw "Migration contains an ownership-restricted COMMENT on a Supabase-managed table: $($file.Name)"
+  }
+  if ($content -match '(?im)alter\s+table\s+(storage\.|auth\.).*\sowner\s+to') {
+    throw "Migration attempts to change ownership in a Supabase-managed schema: $($file.Name)"
+  }
+  if ($content -match '(?im)(create|drop)\s+table\s+(storage\.|auth\.)') {
+    throw "Migration attempts a direct Supabase-managed table structural change: $($file.Name)"
+  }
+}
 
-Write-Output "Static SQL validation passed: $($required.Count) canonical files, $($migration.Count) migration(s), browser secret boundary checked."
+$migrationDocs = Get-ChildItem -LiteralPath (Join-Path $ProjectRoot 'supabase/migrations') -File | Where-Object Extension -ne '.sql'
+if ($migrationDocs.Count -gt 0) { throw 'Only timestamped SQL migration files may exist in supabase/migrations.' }
+
+$edgeFiles = Get-ChildItem -LiteralPath (Join-Path $ProjectRoot 'supabase/functions') -Recurse -File -Filter '*.ts'
+foreach ($file in $edgeFiles) {
+  $content = Get-Content -LiteralPath $file.FullName -Raw
+  if ($content -match 'access-control-allow-origin[''"\s:]+\*') { throw "Edge Function uses wildcard CORS: $($file.FullName)" }
+}
+
+Write-Output "Static SQL validation passed: $($required.Count) canonical files, $($migration.Count) migrations, managed-schema ownership boundary, Edge CORS, and browser secret boundary checked."

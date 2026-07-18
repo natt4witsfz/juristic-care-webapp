@@ -1,3 +1,4 @@
+import { lazy, Suspense, type ComponentType, type ReactElement } from 'react';
 import { createBrowserRouter, createMemoryRouter, type RouteObject } from 'react-router-dom';
 
 import { RouteErrorPage } from '../components/feedback/RouteErrorPage';
@@ -7,17 +8,69 @@ import { ProtectedRoute } from '../features/auth/ProtectedRoute';
 import { ForgotPasswordPage } from '../pages/ForgotPasswordPage';
 import { HomePage } from '../pages/HomePage';
 import { NotFoundPage } from '../pages/NotFoundPage';
-import { ProfilePage } from '../pages/ProfilePage';
 import { ResetPasswordPage } from '../pages/ResetPasswordPage';
 import { SignInPage } from '../pages/SignInPage';
 import { SystemStatusPage } from '../pages/SystemStatusPage';
 import { UnauthorizedPage } from '../pages/UnauthorizedPage';
-import { AiAdvisorPage } from '../pages/workspace/AiAdvisorPage';
-import { CasesPage } from '../pages/workspace/CasesPage';
-import { IncidentsPage } from '../pages/workspace/IncidentsPage';
-import { OperationsPage } from '../pages/workspace/OperationsPage';
-import { PermissionAdminPage } from '../pages/workspace/PermissionAdminPage';
-import { WorkspacePage } from '../pages/workspace/WorkspacePage';
+
+function routeComponent<T extends Record<string, ComponentType>>(
+  loader: () => Promise<T>,
+  name: keyof T,
+) {
+  return lazy(async () => ({ default: (await loader())[name] }));
+}
+
+function page(Component: ComponentType): ReactElement {
+  return (
+    <Suspense fallback={<FullPageLoader label="Loading workspace" />}>
+      <Component />
+    </Suspense>
+  );
+}
+
+const WorkspacePage = routeComponent(
+  () => import('../pages/workspace/WorkspacePage'),
+  'WorkspacePage',
+);
+const CasesPage = routeComponent(() => import('../pages/workspace/CasesPage'), 'CasesPage');
+const InvestigationsPage = routeComponent(
+  () => import('../pages/workspace/InvestigationsPage'),
+  'InvestigationsPage',
+);
+const IncidentsPage = routeComponent(
+  () => import('../pages/workspace/IncidentsPage'),
+  'IncidentsPage',
+);
+const OperationsPage = routeComponent(
+  () => import('../pages/workspace/OperationsPage'),
+  'OperationsPage',
+);
+const EvidencePage = routeComponent(
+  () => import('../pages/workspace/EvidencePage'),
+  'EvidencePage',
+);
+const NotificationsPage = routeComponent(
+  () => import('../pages/workspace/NotificationsPage'),
+  'NotificationsPage',
+);
+const ReportsPage = routeComponent(() => import('../pages/workspace/ReportsPage'), 'ReportsPage');
+const OfflineContinuityPage = routeComponent(
+  () => import('../pages/workspace/OfflineContinuityPage'),
+  'OfflineContinuityPage',
+);
+const TimelinePage = routeComponent(
+  () => import('../pages/workspace/TimelinePage'),
+  'TimelinePage',
+);
+const AiAdvisorPage = routeComponent(
+  () => import('../pages/workspace/AiAdvisorPage'),
+  'AiAdvisorPage',
+);
+const ProfilePage = routeComponent(() => import('../pages/ProfilePage'), 'ProfilePage');
+const PermissionAdminPage = routeComponent(
+  () => import('../pages/workspace/PermissionAdminPage'),
+  'PermissionAdminPage',
+);
 
 export const routeDefinitions: RouteObject[] = [
   {
@@ -35,17 +88,23 @@ export const routeDefinitions: RouteObject[] = [
       {
         element: <ProtectedRoute />,
         children: [
-          { path: 'workspace', element: <WorkspacePage /> },
-          { path: 'cases', element: <CasesPage /> },
-          { path: 'incidents', element: <IncidentsPage /> },
-          { path: 'operations', element: <OperationsPage /> },
-          { path: 'ai-advisor', element: <AiAdvisorPage /> },
-          { path: 'profile', element: <ProfilePage /> },
+          { path: 'workspace', element: page(WorkspacePage) },
+          { path: 'cases', element: page(CasesPage) },
+          { path: 'investigations', element: page(InvestigationsPage) },
+          { path: 'incidents', element: page(IncidentsPage) },
+          { path: 'operations', element: page(OperationsPage) },
+          { path: 'evidence', element: page(EvidencePage) },
+          { path: 'notifications', element: page(NotificationsPage) },
+          { path: 'reports', element: page(ReportsPage) },
+          { path: 'offline', element: page(OfflineContinuityPage) },
+          { path: 'timeline', element: page(TimelinePage) },
+          { path: 'ai-advisor', element: page(AiAdvisorPage) },
+          { path: 'profile', element: page(ProfilePage) },
         ],
       },
       {
         element: <ProtectedRoute roles={['admin']} />,
-        children: [{ path: 'administration/permissions', element: <PermissionAdminPage /> }],
+        children: [{ path: 'administration/permissions', element: page(PermissionAdminPage) }],
       },
       { path: '*', element: <NotFoundPage /> },
     ],

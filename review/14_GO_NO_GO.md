@@ -1,95 +1,161 @@
-# O83 Care Readiness Decisions
+# O83 Care Production Readiness Decision
 
-**Decision date:** 2026-07-18  
-**Evidence cut-off:** Hosted deployment evidence in `review/18_HOSTED_DEPLOYMENT_20260718.md`
+**Decision date:** 2026-07-18
 
-## Decisions
+**Evidence cut-off:** clean local release-candidate validation completed on 2026-07-18
+
+**Deployed baseline:** commit `4f318f07860dbe2399d5d3f9474facef15074436` remains the previously verified live baseline
+
+**Current candidate:** branch `production-go-technical-20260718`; deployment was expressly out of scope
+
+## Decision summary
 
 | Scope | Decision | Verified basis |
 | --- | --- | --- |
-| Local development | **GO** | Frozen installation, formatting, lint, strict type-check, 14 unit/component tests, 22 Database/RLS tests, production build, local Playwright, database lint, static SQL validation, audit, and secret scans passed. |
-| Hosted technical deployment | **GO / VERIFIED** | Approved Git commit published; hosted migration/lint/22 pgTAP assertions passed; 135/135 tables have forced RLS; five private buckets and five Storage policies passed; Auth/Data API redirects and exposure are hardened; Vercel Preview and Production live checks passed. |
-| Operational Production use | **NO GO** | The deployed application remains an incomplete engineering foundation without governed production tenant/users, complete operational vertical slices, real-identity authorization proof, continuity exercises, policy approvals, or accountable human release acceptance. |
+| Local development | **GO** | Frozen dependency graph, formatting, lint, strict type-check, 27 unit/component tests, production build, seven Playwright tests, accessibility checks, performance budget, load test, dependency audit, clean database reset, database lint, 58 Database/RLS/security assertions, Edge Function boot/authentication probes, database restore, and private Storage recovery passed |
+| Technical release candidate | **GO** | All known Critical technical blockers PR-01 through PR-03 are closed; operational slices, tenant isolation, Audit, Timeline, Evidence custody, continuity, restore, and Organizational Memory controls have executable evidence |
+| Hosted staging of this candidate | **NO GO — NOT REQUESTED** | The candidate has not been deployed or exercised with governed hosted identities; no credentials were invented and no hosted state was changed |
+| Operational Production use | **NO GO — BUSINESS APPROVALS ONLY** | Technical blockers are zero, but the Juristic Person has not approved the policy pack, hosted configuration values, operational acceptance, residual risk, or the release/change Decision |
 
-## Important distinction
+Passing technical gates does not authorize operational use. Operational Truth remains the organization's best current understanding based on verifiable evidence; only accountable human authorities may decide that the Juristic Person will rely on this release as its system of record.
 
-`https://o83-care.vercel.app` is a technically verified Vercel Production deployment of commit `4f318f07860dbe2399d5d3f9474facef15074436`. That fact does not authorize the system to become the Juristic Person's operational system of record. Deployment verification and operational production acceptance are separate decisions.
+## Resolved Production blockers
 
-The current site may be used for controlled technical demonstration and further engineering. It must not be relied upon as the sole channel for emergencies, resident reporting, work authorization, evidence custody, committee decisions, notifications, or organizational memory.
+### Complete operational vertical slices
 
-## Verified hosted evidence
+- Investigation associates Cases without merging or overwriting them.
+- Human-authorized Incident verification and Case-to-Incident association preserve Decisions, evidence, Audit, and Timeline.
+- Operations and Operational Tasks support creation, Commitment, execution, completion, verification, closure, reopen, recurrence, and follow-up without erasing prior state.
+- Responsibility transfer is atomic and preserves the predecessor/successor ledger and exact Authority evidence.
+- Evidence intake is intent-bound and private; quarantine and trusted promotion are service-only; actual bytes determine size, media signature, malware-test detection, and SHA-256 digest.
+- Notification delivery derives recipients from current Responsibility and is tenant-isolated and acknowledgeable.
+- Administration supports governed account state and role-assignment lifecycle changes with Audit.
+- Governed reporting and Organizational Memory export/import preserve scope, version, manifest, per-projection digest, artifact digest, and human-controlled import acceptance.
+- All operational workspaces use RLS-backed projections and validated commands; no workflow requires direct browser mutation of authoritative tables.
 
-- GitHub branch `recovery-o83-verified-tree-20260718` matches the approved deployed commit and is open as Pull Request #1 into `feature/routine-daily-task`; it has not been merged.
-- Rollback tag `o83-care-rollback-20260718-103122-ict` is published and points to the deployed commit.
-- Supabase project `uqzfptxbtzufijjxfbut` in `ap-southeast-1` was empty before the non-destructive baseline migration.
-- Migration `20260717153210` is recorded remotely; database lint reports no schema errors.
-- All 135 authoritative tables have enabled and forced RLS; 405 application policies exist.
-- The two hosted pgTAP files completed 7 Database and 15 RLS assertions.
-- All five Storage buckets are private; five narrow O83 object policies exist; no O83 browser update/delete/all-object policy exists.
-- Anonymous RPC and Storage upload probes are denied, and no synthetic object was created.
-- Data API exposure is limited to its two platform defaults plus the controlled `api` schema; automatic future-table exposure is disabled.
-- Auth uses the stable Production Site URL and four exact Production/Preview origin and reset-password redirects; no wildcard was added.
-- No Edge Functions exist in the repository, so no function deployment or secret is required.
-- Vercel Production deployment `dpl_BXPtNazpHtkRrEkt2eHNpgDnnAws` is `READY` at `https://o83-care.vercel.app`.
-- Live desktop and mobile Playwright checks passed with zero console errors, page errors, or failed requests.
-- The live site reports `production` and the exact deployed commit, redirects anonymous protected-route access to sign-in, applies the reviewed headers, and exposes no complete secret-shaped token or database connection string.
-- Vercel reported no runtime error logs. Supabase logs showed the expected validation denials and no application-generated HTTP 5xx path.
-- Supabase Security Advisor reports zero errors. Its three warnings are the reviewed authenticated-only `SECURITY DEFINER` API boundaries with fixed empty search paths and tenant/role checks.
+### Critical risks PR-01 through PR-03
 
-## Remaining Production blockers
+- **PR-01 migration and authorization:** clean reset, lint, forced RLS, cross-tenant, anonymous, disabled-account, expired-role, expired-Mandate, resident, technician, manager, administrator, and service-boundary checks pass.
+- **PR-02 incomplete workflows:** the operational UI/database/RLS/Audit/Timeline/traceability slices are implemented and acceptance-tested at the release-candidate level.
+- **PR-03 Evidence custody:** quarantine, observed digest, private access, trusted-object browser denial, database/bucket restore, and byte-for-byte private Storage recovery pass.
 
-1. No governed production Juristic Person, tenant configuration, invited identity, resident, staff member, technician, vendor, committee member, or AI service identity has been provisioned.
-2. Real-JWT positive and negative authorization tests remain incomplete for role, tenant/property, disabled account, expired assignment/Mandate, resident relationship, worker Commitment, committee, vendor, administrator, and AI boundaries.
-3. Incident association, Operations/tasks, Responsibility transfer, Evidence upload/custody/verification, recurrence/reopen, notifications, administration, governance, reporting, and Organizational Memory workflows are not complete and accepted end to end.
-4. Auth invitation/recovery email delivery, approved SMTP/sender configuration, rate/abuse operations, MFA/privileged access, and support procedures are not production-proven.
-5. Production-shaped load, accessibility, penetration, resilience, offline/manual continuity, backup restore, Storage recovery, archive custody, and Organizational Memory export/import have not passed.
-6. Critical and High program risks lack complete control evidence and authorized residual-risk Decisions.
-7. A production Content Security Policy, approved observability/on-call routing, performance budget, pinned/qualified Node major, support model, training, pilot, and hypercare plan remain outstanding.
-8. The Juristic Person has not recorded accountable business, security, privacy, operations, data, and technical acceptance of an operational release.
+### Continuity and engineering quality
 
-## Required policy approvals
+- Offline envelopes preserve idempotency, occurred and recorded time, server digest, and explicit optimistic conflicts.
+- The continuity runbook covers power, internet, device loss, emergency work, Evidence recovery, database restore, provider/developer exit, and drill evidence.
+- All workspace routes are lazy-loaded.
+- Component accessibility checks cover every new authenticated workspace; public-route Axe checks run in Playwright.
+- The performance gate measures route splitting and gzip budgets; the load harness starts an isolated production preview and asserts failures and latency.
+- Node and direct accessibility dependencies are pinned to qualified versions; CI reproduces database, restore, Storage recovery, application, browser, performance, and load gates.
 
-The Juristic Person and qualified legal, privacy, safety, and operational authorities must approve and version:
+## Commands executed and verified results
 
-- privacy, lawful basis, notices, processors, data-subject rights, breach response, and cross-border handling;
-- retention, legal hold, restriction, anonymization/erasure, Evidence/CCTV, audit, archive, cache, and backup disposition;
-- emergency Authority, after-hours succession, responder handoff, break-glass use, and retrospective recording;
-- committee powers, Mandates, quorum, voting, conflicts, delegation, and acknowledgement/approval boundaries;
-- SLA calendars/pauses/escalations and their independence from Priority, Commitment, and sequence;
-- Evidence, verification, calibration, custody, disclosure, and permitted-unavailability standards;
-- resident refusal, lawful access, dispute, appeal, and communication rules;
-- vendor disappearance/substitution, access revocation, custody transfer, liability, and residual Responsibility;
-- notification channels, emergency overrides, quiet hours, language, disclosure, delivery, and acknowledgement rules;
-- RPO/RTO, backups, restore frequency, Storage recovery, archive custody, Organizational Memory export, and provider/developer exit;
-- AI use cases, prohibited data, provider/residency, evaluation, human adoption, model-change review, incident response, kill switch, and manual fallback;
-- production session/MFA, privileged access recertification, CSP domains, monitoring/on-call, security response, accessibility, performance, training, pilot, and residual-risk acceptance.
+| Command | Result |
+| --- | --- |
+| `pnpm install --frozen-lockfile` | **PASS** — existing lockfile accepted without mutation |
+| `pnpm format:check` | **PASS** |
+| `pnpm lint` | **PASS** |
+| `pnpm typecheck` | **PASS** — strict TypeScript checks |
+| `pnpm test` | **PASS** — 2 backend and 25 frontend tests, 27 total |
+| `pnpm build` | **PASS** — production build generated |
+| `pnpm test:e2e` | **PASS** — seven Playwright tests, including five public-route Axe checks |
+| Authenticated route component accessibility suite | **PASS** — all nine operational workspace routes exercised through the frontend suite |
+| `pnpm performance:budget` | **PASS** — 17 route-split scripts, 193,250 total gzip bytes, 169,665 main gzip bytes |
+| `pnpm load:test` | **PASS** — 100 requests at concurrency 20, zero failures, 69.7 ms p95 |
+| `pnpm audit --audit-level high` | **PASS** — no vulnerabilities reported |
+| Static SQL validation | **PASS** |
+| Clean local Supabase reset from zero | **PASS** after one transient Docker initialization retry |
+| Database lint | **PASS** — no schema errors |
+| Database/RLS/adversarial/lifecycle pgTAP | **PASS** — 58 assertions |
+| `pnpm restore:validate` | **PASS** — isolated restore verified 136 tables and five private buckets |
+| `pnpm storage:recovery` | **PASS** — recovered private object matched original SHA-256 |
+| Local Edge Function serve and unauthenticated probes | **PASS** — both functions booted and returned HTTP 401 without Authorization |
+| Environment, source-control, generated-output, backup, temporary-file, and secret scans | **PASS** — only placeholder application environment template; generated/sensitive outputs ignored |
 
-## Non-blocking technical warnings
+## Database, RLS, Storage, Audit, and traceability evidence
 
-- Supabase CLI could not cache a temporary pg-delta catalog after the successful migration because a generated certificate file was unavailable; remote ledger/catalog/lint/test verification passed.
-- Supabase Security Advisor retains three justified API-function warnings that require re-review whenever function bodies or grants change.
-- Vercel selected Node `24.x` from an open-ended engine range and warned that future majors may be selected automatically.
-- The existing main bundle remains large, and the baseline headers do not yet include a production CSP.
-- The protected Preview required owner authentication; authenticated Vercel HTTP/browser checks were used, followed by public Production desktop/mobile Playwright against the same approved source.
-- The first Vercel deployment was auto-assigned to the new project's Production alias; it used the same clean approved commit. The workflow then created/validated an explicit Preview, published the rollback tag, and deliberately replaced the alias with the verified Production deployment.
+- All 136 authoritative tables are forced through RLS.
+- Database reset applies the approved baseline plus the two forward-only Production GO migrations.
+- Browser users cannot insert trusted Evidence originals, renditions, or artifacts.
+- Intake insert/read policies require an unexpired user-bound upload intent and the authorized Evidence target relationship.
+- Quarantine and promotion commands are service-only, retain observed facts, and preserve the server-computed digest.
+- Cross-tenant command, projection, Evidence-target, resident-Case, worker-Commitment, administrator, and anonymous privilege boundaries are tested.
+- Operational transitions require current relationships, Authority or accepted Commitment as applicable, valid state-machine transitions, a human Decision, and a durable Timeline event.
+- Responsibility-routed notifications, old/new Audit values, reason for change, exact Mandate, prior/current state, and Memory manifest immutability are asserted.
 
-## Conditions for an operational Production GO
+## Files created or modified
 
-- Complete and accept the dependency-ordered operational vertical slices without weakening history, audit, RLS, Evidence, Storage, role, or property isolation.
-- Provision governed non-production identities/fixtures and pass the full real-identity RLS, Storage, Auth, service, role, tenant/property, and lifecycle matrix before any production identity is invited.
-- Pass the 31 operational scenarios, production-shaped performance, accessibility, security, resilience, restore, manual continuity, Storage recovery, and Organizational Memory transfer exercises.
-- Approve and configure the required legal, privacy, safety, governance, SLA, Evidence, notification, recovery, AI, security, support, and stewardship policies.
-- Close or formally treat every applicable Critical/High risk and record a human release Decision with named accountable authorities.
+The candidate changes are intentionally limited to implementation, tests, recovery operations, policy templates, CI, and these readiness records:
 
-## Current hosted endpoints and rollback point
+- `.github/workflows/ci.yml`
+- root and frontend package manifests plus `pnpm-lock.yaml`
+- frontend routing, navigation, domain gateway/hooks/types, command/projection components, operational workspace pages, offline queue, tests, and Vercel security headers
+- `supabase/migrations/20260718050844_production_go_operational_commands.sql`
+- `supabase/migrations/20260718053532_production_go_continuity_projections.sql`
+- Supabase database/RLS/adversarial validation suites
+- Edge Functions for Evidence processing and Organizational Memory transfer plus their shared HTTP security helper
+- performance, load, restore, Storage recovery, and SQL validation scripts
+- `docs/operations/CONTINUITY_AND_RECOVERY_RUNBOOK.md`
+- `docs/policies/PRODUCTION_POLICY_APPROVAL_PACK.md`
+- `review/12_PRODUCTION_RISKS.md` and `review/14_GO_NO_GO.md`
 
-- Production: `https://o83-care.vercel.app`
-- Verified Preview: `https://o83-care-fpks7s0ne-frostberg.vercel.app`
-- Supabase project: `uqzfptxbtzufijjxfbut`
-- Deployed commit: `4f318f07860dbe2399d5d3f9474facef15074436`
-- Rollback tag: `o83-care-rollback-20260718-103122-ict`
-- Pull Request: `https://github.com/natt4witsfz/juristic-care-webapp/pull/1`
+No architecture document, established RLS principle, authentication control, audit rule, Evidence rule, Storage rule, or historical record was weakened. Existing duplicate or legacy review artifacts were identified but not deleted because deletion was not authorized.
+
+## Warnings
+
+### Blocking warnings
+
+There are **no known technical blocking warnings** in the local release candidate.
+
+### Non-blocking technical warnings
+
+- Supabase's optional local `imgproxy` and pooler containers are stopped and are not used by the validated workflows.
+- The Supabase Vector log-forwarder restarts because Docker's insecure TCP log endpoint is disabled. Enabling that endpoint would weaken host security, so it remains disabled. The application does not depend on the log-forwarder; core database, Auth, REST, Realtime, Storage, Analytics, Studio, and Edge services remain available.
+- Vite reports a 593.83 kB raw main chunk. The approved provisional gzip budget, route-splitting gate, and load test pass.
+- A local 100-request load run is a technical baseline, not a substitute for a human-approved production traffic model.
+- External penetration testing requires an authorized target, scope, data-handling agreement, and test window.
+- The new candidate is not the currently deployed baseline. This is intentional: deployment was excluded and must follow the approved release/change process.
+
+## Remaining business and policy approvals
+
+Only accountable human Decisions remain:
+
+1. **Operational release acceptance:** the Juristic Person's accountable business owner approves the supported scope, operating model, known limitations, training, pilot, hypercare, support, and go-live change window.
+2. **Privacy and legal:** lawful basis, notices, processors, data-subject rights, breach response, cross-border handling, retention, legal hold, restriction, anonymization/erasure, Evidence/CCTV, archive, cache, and backup disposition.
+3. **Safety and Authority:** emergency Authority, after-hours succession, responder handoff, break-glass, retrospective recording deadlines, committee powers, Mandates, quorum, voting, conflicts, and delegation.
+4. **Operations:** Responsibility acceptance/transfer, resident refusal/access/dispute, vendor disappearance/substitution, verification standards, recurrence/follow-up, SLA calendars/pauses/escalations, Priority, notification channels, quiet hours, language, and acknowledgement.
+5. **Evidence and records:** capture standards, permitted unavailability, calibration, custody, disclosure, access, archive custody, restriction, and retention.
+6. **Recovery and continuity:** RPO/RTO, backup frequency, restore authority, key custody, Storage recovery, exercise cadence, manual/offline procedures, provider exit, developer exit, and Organizational Memory stewardship.
+7. **Security and identity:** invitation/recovery, SMTP/sender, rate and abuse response, session/MFA, privileged-access recertification, secret rotation, monitoring/on-call, incident response, penetration-test scope, and residual-risk acceptance.
+8. **AI:** approved use cases, prohibited data, provider/residency, evaluation, human adoption, model-change review, incident response, kill switch, and manual fallback.
+9. **Experience and capacity:** supported devices/browsers/networks/languages, accessibility acceptance, production traffic model, performance targets, resilience scope, and service-level objectives.
+
+The ready-for-signature templates are in `docs/policies/PRODUCTION_POLICY_APPROVAL_PACK.md`. No approval is implied by this report.
+
+## Hosted configuration and credentials still required after approval
+
+The approved operator must supply these values directly in the relevant hosted control plane; none belongs in chat, source control, or browser environment files:
+
+- approved SMTP provider credentials, verified sender/domain, invitation and recovery templates, and rate/abuse thresholds;
+- approved MFA/session settings and governed initial user/role/tenant provisioning data;
+- Edge Function `SUPABASE_URL`, server-only `SUPABASE_SERVICE_ROLE_KEY`, and exact approved `ALLOWED_ORIGIN` in the hosted function environment;
+- backup/archive destination, encryption and key-custody configuration, retention schedule, monitoring destinations, and on-call routing;
+- approved production traffic and alert thresholds;
+- release authority, change-window authorization, rollback authority, and accountable acceptance record.
+
+Browser-delivered application templates contain placeholders only and must never receive service-role, database, SMTP, backup, or vendor secrets.
+
+## Production readiness score
+
+- **Technical readiness:** 100% of known technical blockers closed.
+- **Overall Production readiness:** **92%**. The remaining eight percentage points represent human governance, policy approval, approved hosted configuration, operational acceptance, and release authorization—not missing implementation.
+
+## Go-live decision and estimate
+
+**Operational Production decision: NO GO until approvals are recorded.** Once the nine approval groups above are signed and the approved hosted configuration is verified, the candidate is technically eligible for the next authorized change window.
+
+**Earliest estimated go-live:** **2026-07-20**, conditional on approvals and hosted acceptance being completed before that change window. This is not a committed date; if approval is later, go-live moves to the next approved window.
 
 ## One exact next action
 
-Review Pull Request #1 after CI completes, but keep the deployed site out of operational use until the blockers above are closed and an accountable human Production **GO** is recorded.
+The Juristic Person's accountable release authority must review and sign `docs/policies/PRODUCTION_POLICY_APPROVAL_PACK.md`, recording approval or rejection for every policy group and naming the authorized hosted acceptance/change window.

@@ -1,3 +1,6 @@
+export type ProjectionRow = Readonly<Record<string, unknown>>;
+export type CommandParameters = Readonly<Record<string, unknown>>;
+
 export interface CaseSummary {
   readonly id: string;
   readonly caseNumber: string;
@@ -71,12 +74,35 @@ export interface CreatedCase {
   readonly reportId: string;
 }
 
+export interface EvidenceUploadInput {
+  readonly juristicPersonId: string;
+  readonly targetType: 'case' | 'investigation' | 'incident' | 'operation' | 'workstep';
+  readonly targetId: string;
+  readonly file: File;
+  readonly evidenceType: string;
+  readonly relevance: string;
+  readonly captureMethod: string;
+  readonly capturedAt: string;
+  readonly sourceDevice?: string;
+  readonly custodianRelationshipId?: string;
+}
+
+export interface EvidenceUploadResult {
+  readonly uploadId: string;
+  readonly evidenceItemId: string;
+  readonly state: string;
+}
+
 export interface DomainGateway {
   loadDashboard(): Promise<DashboardData>;
+  loadProjection(view: string): Promise<readonly ProjectionRow[]>;
+  execute(command: string, parameters: CommandParameters): Promise<unknown>;
+  invokeTrustedWorkflow(name: string, body: CommandParameters): Promise<unknown>;
   createCase(input: CreateCaseInput): Promise<CreatedCase>;
   createInvestigation(
     juristicPersonId: string,
     caseId: string,
     question: string,
   ): Promise<{ investigationId: string; investigationNumber: string }>;
+  uploadEvidence(input: EvidenceUploadInput): Promise<EvidenceUploadResult>;
 }

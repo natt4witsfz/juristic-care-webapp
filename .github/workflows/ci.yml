@@ -32,7 +32,7 @@ jobs:
       - name: Install Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 22.14.0
+          node-version: 24.4.1
           cache: pnpm
 
       - name: Install pinned dependencies
@@ -53,6 +53,14 @@ jobs:
 
       - name: Run database and RLS tests
         run: pnpm supabase test db
+
+      - name: Validate isolated database restore
+        shell: pwsh
+        run: ./scripts/validate-restore.ps1
+
+      - name: Validate private Storage recovery
+        shell: pwsh
+        run: ./scripts/validate-storage-recovery.ps1
 
       - name: Stop local Supabase
         if: always()
@@ -76,7 +84,7 @@ jobs:
       - name: Install Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 22.14.0
+          node-version: 24.4.1
           cache: pnpm
 
       - name: Install pinned dependencies
@@ -96,6 +104,12 @@ jobs:
 
       - name: Build
         run: pnpm build
+
+      - name: Enforce performance budget
+        run: pnpm performance:budget
+
+      - name: Run local production-preview load test
+        run: pnpm load:test
 
       - name: Upload coverage artifacts
         if: always()
@@ -125,7 +139,7 @@ jobs:
       - name: Install Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 22.14.0
+          node-version: 24.4.1
           cache: pnpm
 
       - name: Install pinned dependencies

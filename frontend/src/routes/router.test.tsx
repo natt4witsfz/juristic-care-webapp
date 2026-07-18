@@ -1,3 +1,4 @@
+import axe from 'axe-core';
 import { render, screen } from '@testing-library/react';
 import { vi } from 'vitest';
 
@@ -15,6 +16,18 @@ vi.mock('../config/environment', () => ({
 }));
 
 describe('application routes', () => {
+  const operationalRoutes = [
+    ['/investigations', 'Investigations'],
+    ['/incidents', 'Incidents'],
+    ['/operations', 'Operations and Tasks'],
+    ['/evidence', 'Evidence'],
+    ['/notifications', 'Notifications'],
+    ['/reports', 'Governed Reporting and Organizational Memory'],
+    ['/offline', 'Offline Continuity'],
+    ['/timeline', 'Immutable Timeline and Traceability'],
+    ['/administration/permissions', 'Administration'],
+  ] as const;
+
   it('renders the not-found page for an unknown path', async () => {
     render(
       <App authGateway={createAuthGateway()} router={createTestRouter(['/does-not-exist'])} />,
@@ -44,4 +57,27 @@ describe('application routes', () => {
     render(<App authGateway={createAuthGateway()} router={createTestRouter(['/workspace'])} />);
     expect(await screen.findByRole('heading', { name: /^sign in$/i })).toBeVisible();
   });
+
+  for (const [path, heading] of operationalRoutes) {
+    it(`loads the protected ${path} vertical slice for an authorized administrator`, async () => {
+      const authGateway = createAuthGateway({
+        user: { id: 'auth-user-1', email: 'admin@example.test' },
+        access: {
+          juristicPersonId: 'tenant-1',
+          personId: 'person-1',
+          displayName: 'Test Administrator',
+          roles: ['admin'],
+          permissions: [],
+        },
+      });
+
+      render(<App authGateway={authGateway} router={createTestRouter([path])} />);
+
+      expect(await screen.findByRole('heading', { name: heading })).toBeVisible();
+      const results = await axe.run(document.body, {
+        rules: { 'color-contrast': { enabled: false } },
+      });
+      expect(results.violations.map(({ id, nodes }) => ({ id, nodes: nodes.length }))).toEqual([]);
+    });
+  }
 });

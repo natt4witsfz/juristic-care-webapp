@@ -4,8 +4,8 @@
   "private": true,
   "packageManager": "pnpm@11.9.0",
   "engines": {
-    "node": ">=22.12.0",
-    "pnpm": ">=11.0.0"
+    "node": "24.x",
+    "pnpm": "11.x"
   },
   "scripts": {
     "dev": "pnpm --filter @o83/frontend dev",
@@ -27,10 +27,15 @@
     "db:stop": "supabase stop",
     "db:reset": "supabase db reset",
     "db:status": "supabase status",
-    "db:validate:static": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/validate-sql.ps1"
+    "db:validate:static": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/validate-sql.ps1",
+    "performance:budget": "node scripts/check-performance.mjs",
+    "load:test": "node scripts/load-test.mjs",
+    "restore:validate": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/validate-restore.ps1",
+    "storage:recovery": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/validate-storage-recovery.ps1"
   },
   "devDependencies": {
     "@playwright/test": "1.61.1",
+    "@supabase/supabase-js": "2.110.7",
     "prettier": "3.9.5",
     "supabase": "2.109.1"
   }
