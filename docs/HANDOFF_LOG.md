@@ -45,3 +45,43 @@ No application, SQL migration, RLS policy, Edge Function, build configuration or
 ### Recommended continuation
 
 Execute Sprint 16 — Governed Staging Acceptance and Production Stewardship, as defined in `docs/FINAL_HANDOVER_20260718.md`. Do not invite Production users or promote the candidate before policy approval, hosted acceptance and an accountable Production GO Decision.
+
+## 2026-07-18 — Owner-authorized direct production pilot release
+
+### Summary
+
+The project owner explicitly authorized the verified candidate for direct Production release as an operational pilot and accepted the documented residual business-policy risks for the deployment action. The candidate was merged normally into `integration`, preserved by immutable pre-release and rollback tags, and pushed without force or history rewriting.
+
+This release checkpoint records the hosted Supabase work completed before the Vercel Production promotion. It contains no secret, temporary password or service credential.
+
+### Release source and safety controls
+
+- merged source commit before this documentation checkpoint: `02429926b9b5e263e36584158edbfbea5ed81699`;
+- immutable pre-production safety tag: `o83-care-pre-production-20260718-210154-ict` at candidate commit `14a83ce`;
+- existing rollback tag preserved unchanged: `o83-care-rollback-20260718-103122-ict` at deployed baseline `4f318f0`;
+- candidate branch `feature/routine-daily-task` pushed to `origin`;
+- no force push, destructive database action, schema weakening or broad access grant was used.
+
+### Verified release actions
+
+- `pnpm typecheck` passed for backend and frontend;
+- `pnpm build` passed; the existing Vite raw-chunk advisory remains non-blocking because routes are split and the release did not introduce a functional build failure;
+- hosted migrations `20260718050844` and `20260718053532` were applied in order and the remote migration ledger matches all three repository migrations;
+- Edge Functions `evidence-process` and `memory-transfer` were deployed as active version 1 functions with JWT verification enabled;
+- unauthenticated probes to both Edge Functions returned HTTP 401;
+- the private Storage and application security policies were not weakened;
+- Juristic Person `The Origin Ramindra 83 Station` was created with the tenant-scoped governed role, permission and taxonomy reference data;
+- initial administrator `testor.onev@gmail.com` was created as an auto-confirmed Supabase Auth user and linked to one durable Person, one effective staff relationship, one active admin role assignment and one active `permission.manage` mandate;
+- database-owned access resolution returns exactly the `admin` role and the tenant permission set for the initial administrator;
+- 114 bootstrap row changes carry the explicit owner-authorized release reason in the immutable audit ledger.
+
+### Residual conditions
+
+- The owner-authorized pilot release does not replace unsigned committee, privacy, retention, incident-response, AI-use, accessibility or continuity policy approvals.
+- Hosted SMTP delivery, MFA/session enforcement, independent private Storage backup, scheduled restore rehearsal, authorized load target and external penetration testing remain operational follow-up items.
+- No additional sample tenant, user, Case, Incident, Operation, Evidence or Organizational Memory data was created.
+- The full historical local suite was not rerun because the release authorization required only minimum release checks and expressly prohibited spending the release window on unrelated historical coverage.
+
+### Next controlled action
+
+Commit and push this handoff checkpoint, deploy that exact commit to Vercel Production, then verify public routes, authenticated access and rollback readiness against the live deployment.
