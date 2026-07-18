@@ -4,6 +4,7 @@ import { RouteErrorPage } from '../components/feedback/RouteErrorPage';
 import { FullPageLoader } from '../components/feedback/FullPageLoader';
 import { AppShell } from '../components/layout/AppShell';
 import { ProtectedRoute } from '../features/auth/ProtectedRoute';
+import { HousekeepingRoutinePage } from '../features/housekeeping_routine/housekeeping_routine_page';
 import { ForgotPasswordPage } from '../pages/ForgotPasswordPage';
 import { HomePage } from '../pages/HomePage';
 import { NotFoundPage } from '../pages/NotFoundPage';
@@ -32,6 +33,7 @@ export const routeDefinitions: RouteObject[] = [
       { path: 'reset-password', element: <ResetPasswordPage /> },
       { path: 'unauthorized', element: <UnauthorizedPage /> },
       { path: 'system-status', element: <SystemStatusPage /> },
+      { path: 'prototype/housekeeping-routine', element: <HousekeepingRoutinePage /> },
       {
         element: <ProtectedRoute />,
         children: [

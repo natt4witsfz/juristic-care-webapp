@@ -1,5 +1,48 @@
 # Handoff Log
 
+## 2026-07-18 — Housekeeping Routine Control functional mockup
+
+### Summary
+
+- Added an isolated React feature at `/prototype/housekeeping-routine` for juristic staff to monitor, inspect, approve, reject, and reopen synthetic housekeeping Routine work.
+- Kept Contract Position HK-01–HK-10 as the Board rows and separated Employee Profile, effective-dated Position Assignment, actual Daily Attendance, substitute workers, task templates, time-specific task instances, evidence revisions, and audit entries.
+- Added the Daily Board, Inspection Queue, reusable Inspection Drawer, Position History demo, Daily Report Preview, inspector selector, Building Manager Reopen flow, localStorage persistence, and Reset Demo Data.
+- Added repository and report-storage ports with mock adapters. The Supabase file is an unimplemented type seam only; no Supabase client, schema, migration, RLS, Storage, Google Drive API, Production auth, or Production permission was changed.
+- Added central synthetic seed data covering every requested status and the HK-03 historical/current/future assignment plus the HK-05 retroactive assignment example.
+- Added unit, component, and Playwright coverage plus browser screenshots under `outputs/housekeeping_routine_mockup/`.
+
+### Files changed
+
+- `frontend/src/features/housekeeping_routine/`
+- `frontend/src/routes/router.tsx`
+- `frontend/e2e/housekeeping_routine.spec.ts`
+- `docs/housekeeping_routine_mockup_spec_v0_1.md`
+- `outputs/housekeeping_routine_mockup/`
+- `HANDOFF_LOG.md`
+
+### Verification performed
+
+- Formatted and checked every changed TypeScript, CSS, Markdown, test, and route file with Prettier.
+- Frontend ESLint: passed with zero warnings.
+- Backend ESLint: passed with zero warnings.
+- Frontend TypeScript strict project build/typecheck: passed.
+- Backend TypeScript strict project build/typecheck: passed.
+- Frontend Vitest: 10 files, 20 tests passed.
+- Backend Vitest: 1 file, 2 tests passed.
+- Playwright Chromium: 4 tests passed, including approval persistence/reset and effective-dated HK-03 history.
+- Vite production build: passed; emitted the existing bundle-size advisory for a JavaScript chunk over 500 kB.
+- Browser walkthrough: Board, Before/After Drawer, approve, refresh persistence, reject with required “อื่น ๆ” detail, Position History, retroactive audit, Daily Report storage mock, historical assignment, and Reset Demo Data passed; browser console error log was empty.
+- Repository-wide `prettier --check .` was also run and reports 178 pre-existing files outside this task as unformatted. Those files were intentionally not rewritten to avoid unrelated changes.
+
+### Known issues / follow-up work
+
+- Persistence is device-local localStorage and does not provide server authority, multi-user concurrency, idempotency, or conflict handling.
+- Evidence and check-in images are visibly watermarked visual placeholders rather than uploaded binary files.
+- The mock permission selector does not read Production role/mandate data.
+- Supabase and Google Drive adapters remain intentionally unimplemented; see `docs/housekeeping_routine_mockup_spec_v0_1.md`.
+- The route intentionally has no Production navigation entry and must be opened directly.
+- The Vite production build retains the existing chunk-size advisory; route-level lazy loading can be evaluated separately without coupling it to this mockup.
+
 ## 2026-06-30 — Routine Daily Task / Daily PM flow clarity
 
 ### Summary
