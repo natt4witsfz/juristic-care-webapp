@@ -3,7 +3,7 @@
 begin;
 
 create extension if not exists pgtap with schema extensions;
-select extensions.plan(7);
+select extensions.plan(9);
 
 select extensions.is(
   (
@@ -15,8 +15,8 @@ select extensions.is(
       'memory','integration'
     ])
   ),
-  135::bigint,
-  'all 135 authoritative O83 tables exist'
+  136::bigint,
+  'all 136 authoritative O83 tables exist'
 );
 
 select extensions.is(
@@ -125,6 +125,29 @@ select extensions.ok(
     where version = '20260717153210'
   ),
   'the O83 baseline migration is recorded'
+);
+
+select extensions.ok(
+  exists (select 1 from supabase_migrations.schema_migrations where version = '20260718050844')
+  and exists (select 1 from supabase_migrations.schema_migrations where version = '20260718053532'),
+  'both production-go forward migrations are recorded'
+);
+
+select extensions.is(
+  (
+    select count(*) from (values
+      ('add_case_to_investigation'),('verify_incident_from_investigation'),('associate_case_to_incident'),
+      ('create_operation'),('add_operation_task'),('offer_commitment'),('accept_commitment'),
+      ('transition_work_step'),('transition_operation'),('record_operation_verification'),
+      ('close_incident'),('reopen_incident'),('transfer_responsibility'),('begin_evidence_upload'),
+      ('quarantine_evidence_upload'),('promote_evidence_upload'),('acknowledge_notification'),
+      ('submit_offline_envelope'),('begin_memory_transfer'),('finalize_memory_transfer'),
+      ('set_account_state'),('assign_role'),('end_role_assignment')
+    ) required(name)
+    where not exists (select 1 from pg_proc p join pg_namespace n on n.oid = p.pronamespace where n.nspname = 'api' and p.proname = required.name)
+  ),
+  0::bigint,
+  'every production-go controlled command exists'
 );
 
 select * from extensions.finish();

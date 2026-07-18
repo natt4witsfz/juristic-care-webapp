@@ -3,7 +3,7 @@
 begin;
 
 create extension if not exists pgtap with schema extensions;
-select extensions.plan(15);
+select extensions.plan(20);
 
 select extensions.is(
   (
@@ -68,8 +68,8 @@ select extensions.is(
       and tablename = 'objects'
       and policyname like 'o83_storage_%'
   ),
-  5::bigint,
-  'all five O83 Storage object policies exist'
+  4::bigint,
+  'four narrow O83 Storage read and intake policies exist'
 );
 
 select extensions.is(
@@ -80,8 +80,18 @@ select extensions.is(
       and policyname like 'o83_storage_%'
       and cmd = 'INSERT'
   ),
-  2::bigint,
-  'Storage writes are limited to two insert policies'
+  1::bigint,
+  'browser Storage writes are limited to one intent-bound intake policy'
+);
+
+select extensions.ok(
+  exists (
+    select 1 from storage.buckets
+    where id = 'o83-evidence-intake' and public is false
+      and file_size_limit = 52428800
+      and allowed_mime_types @> array['image/jpeg','image/png','application/pdf','text/plain']::text[]
+  ),
+  'private Evidence intake enforces the trusted processor size and MIME boundary before upload'
 );
 
 select extensions.is(
@@ -132,7 +142,7 @@ select extensions.is(
     where policyname like 'o83_admin_all_%'
   ),
   135::bigint,
-  'admin has one tenant-scoped policy per authoritative table'
+  'baseline authoritative tables retain one tenant-scoped admin policy each'
 );
 
 select extensions.is(
@@ -182,6 +192,36 @@ select extensions.is(
   'no authoritative RLS policy targets anon'
 );
 
+select extensions.ok(
+  exists (
+    select 1 from pg_policies
+    where schemaname = 'storage' and tablename = 'objects'
+      and policyname = 'o83_storage_intake_insert'
+      and with_check like '%can_upload_intake_object%'
+  ),
+  'intake Storage insertion requires a database-issued upload intent'
+);
+
+select extensions.ok(
+  not has_function_privilege('authenticated', 'api.promote_evidence_upload(uuid,uuid,text,text,bigint,text,text,uuid,text,core.link_role,text,text,timestamptz,text,uuid)', 'EXECUTE')
+  and not has_function_privilege('authenticated', 'api.quarantine_evidence_upload(uuid,uuid,text,text)', 'EXECUTE'),
+  'authenticated browsers cannot promote or quarantine Evidence'
+);
+
+select extensions.ok(
+  has_function_privilege('service_role', 'api.promote_evidence_upload(uuid,uuid,text,text,bigint,text,text,uuid,text,core.link_role,text,text,timestamptz,text,uuid)', 'EXECUTE')
+  and has_function_privilege('service_role', 'api.finalize_memory_transfer(uuid,uuid,text,text,jsonb,text,text,timestamptz,timestamptz)', 'EXECUTE'),
+  'trusted processors can execute only the reviewed Evidence and Memory finalizers'
+);
+
+select extensions.ok(
+  exists (
+    select 1 from pg_class c join pg_namespace n on n.oid = c.relnamespace
+    where n.nspname = 'integration' and c.relname = 'inbound_message_payloads'
+      and c.relrowsecurity and c.relforcerowsecurity
+  ),
+  'immutable offline payloads are protected by forced RLS'
+);
+
 select * from extensions.finish();
 rollback;
-

@@ -33,6 +33,11 @@ export function AppShell() {
               </NavLink>
             ) : null}
             {auth.user ? (
+              <NavLink className="link" to="/investigations">
+                Investigations
+              </NavLink>
+            ) : null}
+            {auth.user ? (
               <NavLink className="link" to="/incidents">
                 Incidents
               </NavLink>
@@ -40,6 +45,31 @@ export function AppShell() {
             {auth.user ? (
               <NavLink className="link" to="/operations">
                 Operations
+              </NavLink>
+            ) : null}
+            {auth.user ? (
+              <NavLink className="link" to="/evidence">
+                Evidence
+              </NavLink>
+            ) : null}
+            {auth.user ? (
+              <NavLink className="link" to="/notifications">
+                Notifications
+              </NavLink>
+            ) : null}
+            {auth.user ? (
+              <NavLink className="link" to="/reports">
+                Reports
+              </NavLink>
+            ) : null}
+            {auth.user ? (
+              <NavLink className="link" to="/offline">
+                Offline
+              </NavLink>
+            ) : null}
+            {auth.user ? (
+              <NavLink className="link" to="/timeline">
+                Timeline
               </NavLink>
             ) : null}
             {auth.user ? (
