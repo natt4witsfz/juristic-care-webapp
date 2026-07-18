@@ -1,0 +1,3 @@
+-- O83 Care local seed entry point.
+-- Business seed data is intentionally absent from the infrastructure bootstrap.
+-- Add deterministic, non-sensitive seed modules only with their owning feature.
