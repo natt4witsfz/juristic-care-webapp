@@ -34,9 +34,9 @@
     "storage:recovery": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/validate-storage-recovery.ps1"
   },
   "devDependencies": {
-    "@playwright/test": "1.61.1",
+    "@playwright/test": "1.62.0",
     "@supabase/supabase-js": "2.110.7",
-    "prettier": "3.9.5",
-    "supabase": "2.109.1"
+    "prettier": "3.9.6",
+    "supabase": "2.110.0"
   }
 }
